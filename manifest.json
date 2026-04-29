@@ -1,6 +1,6 @@
 {
-  "name": "혼지쯔노 니홍고",
-  "short_name": "니홍고",
+  "name": "혼지쯔노니홍고",
+  "short_name": "혼지쯔노니홍고",
   "description": "하루 한 문장, 소리로 익히는 일본어 30일 챌린지",
   "start_url": "./index.html",
   "scope": "./",
