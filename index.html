@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#FFE566">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="혼지쯔노니홍고">
+<!-- Safari 홈화면 추가 시 아이콘 -->
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icon.png">
+<link rel="apple-touch-icon" sizes="167x167" href="icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+<!-- PWA 매니페스트 (외부 파일) -->
+<link rel="manifest" href="manifest.json">
+<title>혼지쯔노 니홍고 🇯🇵</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gmarket+Sans:wght@300;500;700&family=Noto+Sans+KR:wght@300;400;700;900&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--yellow:#FFE566;--yellow-light:#FFF5B7;--yellow-dark:#F5C800;--mint:#A8F0E0;--mint-light:#D6FAF2;--mint-dark:#4DD9BB;--coral:#FF8B6A;--coral-light:#FFDDD3;--purple:#C5A8FF;--purple-light:#EDE0FF;--text-dark:#1A1A2E;--text-mid:#4A4A6A;--text-light:#9999BB;--white:#FFFFFE;--bg:#FAFAF8;--shadow:0 8px 32px rgba(80,60,120,0.10);--r:24px;--rs:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text-dark);min-height:100vh;overflow-x:hidden;}
+.bg-blobs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.32;animation:blobFloat 8s ease-in-out infinite alternate;}
+.blob-1{width:420px;height:420px;background:var(--yellow);top:-100px;left:-100px;}
+.blob-2{width:320px;height:320px;background:var(--mint);top:200px;right:-80px;animation-delay:2s;}
+.blob-3{width:260px;height:260px;background:var(--purple-light);bottom:50px;left:20%;animation-delay:4s;}
+@keyframes blobFloat{from{transform:translate(0,0) scale(1);}to{transform:translate(20px,-30px) scale(1.05);}}
+.container{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 16px 100px;}
+/* HEADER */
+.header{padding:22px 0 4px;text-align:center;}
+.header-badge{display:inline-flex;align-items:center;gap:6px;background:var(--yellow);color:var(--text-dark);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:999px;margin-bottom:8px;box-shadow:0 2px 8px rgba(245,200,0,.3);}
+.header-title{font-family:'Gmarket Sans',sans-serif;font-size:26px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bottom:4px;}
+.header-title span{color:var(--mint-dark);}
+.header-sub{font-size:12px;color:var(--text-mid);font-weight:300;}
+/* DEADLINE SETUP */
+.deadline-setup{margin:14px 0 0;background:var(--white);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);}
+.dl-title{font-family:'Gmarket Sans',sans-serif;font-size:15px;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.dl-sub{font-size:12px;color:var(--text-mid);margin-bottom:14px;line-height:1.5;}
+.preset-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.preset-btn{flex:1;min-width:80px;padding:9px 6px;border:2px solid #E8E8F0;border-radius:var(--rs);background:var(--white);font-size:12px;font-weight:700;color:var(--text-mid);cursor:pointer;transition:all .18s;font-family:'Noto Sans KR',sans-serif;text-align:center;}
+.preset-btn:hover,.preset-btn.sel{border-color:var(--yellow-dark);background:var(--yellow-light);color:var(--text-dark);}
+.custom-row{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
+.custom-row label{font-size:12px;color:var(--text-mid);white-space:nowrap;}
+.custom-row input[type=date]{flex:1;border:2px solid #E8E8F0;border-radius:10px;padding:8px 10px;font-size:13px;font-family:'Noto Sans KR',sans-serif;color:var(--text-dark);outline:none;}
+.custom-row input[type=date]:focus{border-color:var(--yellow-dark);}
+.start-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--yellow),var(--mint));border:none;border-radius:var(--rs);font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:all .2s;}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(168,240,224,.45);}
+/* DEADLINE CARD */
+.dl-card{margin:14px 0 0;border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);display:none;position:relative;overflow:hidden;}
+.dl-card.show{display:block;}
+.dl-accent{position:absolute;top:0;left:0;right:0;height:4px;border-radius:var(--r) var(--r) 0 0;}
+.dl-card.safe{background:var(--mint-light);} .dl-card.safe .dl-accent{background:linear-gradient(90deg,var(--mint-dark),#4DD9BB);}
+.dl-card.warn{background:var(--yellow-light);} .dl-card.warn .dl-accent{background:linear-gradient(90deg,var(--yellow-dark),var(--coral));}
+.dl-card.danger{background:var(--coral-light);} .dl-card.danger .dl-accent{background:linear-gradient(90deg,var(--coral),#FF4444);}
+.dl-card.done{background:linear-gradient(135deg,var(--mint-light),var(--yellow-light));} .dl-card.done .dl-accent{background:linear-gradient(90deg,var(--yellow-dark),var(--mint-dark));}
+.dl-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.dl-label{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-mid);margin-bottom:3px;}
+.dl-days{font-family:'Gmarket Sans',sans-serif;font-size:26px;font-weight:700;line-height:1;}
+.dl-days span{font-size:13px;font-weight:400;color:var(--text-mid);margin-left:3px;}
+.dl-date{font-size:11px;color:var(--text-mid);margin-top:2px;}
+.dl-pace-val{font-family:'Gmarket Sans',sans-serif;font-size:18px;font-weight:700;line-height:1;text-align:right;}
+.dl-pace-lbl{font-size:11px;color:var(--text-mid);margin-top:2px;text-align:right;}
+.dl-bar-wrap{background:rgba(0,0,0,.08);border-radius:999px;height:7px;overflow:hidden;margin-bottom:8px;}
+.dl-bar-fill{height:100%;border-radius:999px;transition:width .5s;}
+.dl-card.safe .dl-bar-fill{background:var(--mint-dark);}
+.dl-card.warn .dl-bar-fill{background:var(--yellow-dark);}
+.dl-card.danger .dl-bar-fill{background:var(--coral);}
+.dl-card.done .dl-bar-fill{background:linear-gradient(90deg,var(--yellow-dark),var(--mint-dark));}
+.dl-msg{font-size:12px;color:var(--text-dark);line-height:1.5;}
+.dl-reset{position:absolute;top:14px;right:14px;background:none;border:none;font-size:11px;color:var(--text-light);cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+/* GAME STRIP */
+.game-strip{display:flex;gap:10px;margin:14px 0 4px;}
+.g-card{flex:1;background:var(--white);border-radius:var(--rs);padding:12px 10px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:3px;position:relative;overflow:hidden;}
+.g-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.g-card.streak::before{background:linear-gradient(90deg,#FF8B6A,#FFE566);}
+.g-card.xp::before{background:linear-gradient(90deg,#A8F0E0,#4DD9BB);}
+.g-card.lv::before{background:linear-gradient(90deg,#C5A8FF,#9966FF);}
+.g-icon{font-size:20px;} .g-val{font-family:'Gmarket Sans',sans-serif;font-size:19px;font-weight:700;color:var(--text-dark);line-height:1;} .g-lbl{font-size:10px;color:var(--text-light);font-weight:700;letter-spacing:.8px;text-transform:uppercase;}
+.xp-bar-wrap{width:100%;background:#EFEFEF;border-radius:999px;height:4px;margin-top:2px;}
+.xp-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--mint-dark),var(--purple));transition:width .5s;}
+.xp-bar-fill.maxed{background:linear-gradient(90deg,var(--yellow-dark),var(--coral));box-shadow:0 0 6px rgba(245,200,0,.6);}
+/* STREAK BANNER */
+.streak-banner{display:none;margin-bottom:8px;background:linear-gradient(135deg,#FF8B6A22,#FFE56622);border:1.5px solid var(--coral);border-radius:var(--rs);padding:10px 16px;font-size:12px;color:var(--text-dark);text-align:center;line-height:1.5;}
+.streak-banner.show{display:block;}
+/* ROADMAP */
+.roadmap{margin:12px 0 8px;background:var(--white);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow);}
+.rm-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.rm-label{font-size:12px;font-weight:700;color:var(--text-mid);}
+.rm-count{font-size:12px;font-weight:700;background:var(--yellow-light);padding:3px 10px;border-radius:999px;color:var(--text-dark);}
+.prog-wrap{background:#EFEFEF;border-radius:999px;height:8px;overflow:hidden;margin-bottom:10px;}
+.prog-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--yellow-dark),var(--mint-dark));transition:width .6s cubic-bezier(.4,0,.2,1);}
+.rm-dots{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;}
+.dot{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;cursor:pointer;border:2.5px solid transparent;transition:all .2s;}
+.dot.done{background:var(--mint);color:var(--text-dark);border-color:var(--mint-dark);font-size:11px;}
+.dot.done::after{content:'✓';}
+.dot.active{background:var(--yellow);color:var(--text-dark);border-color:var(--yellow-dark);transform:scale(1.15);box-shadow:0 0 0 4px var(--yellow-light);}
+.dot.locked{background:#F0F0F0;color:#BBBBD0;border-color:#E0E0E0;}
+.dot:hover:not(.locked){transform:scale(1.18);}
+/* DAY NAV */
+.day-nav{display:flex;align-items:center;justify-content:space-between;margin:18px 0 10px;}
+.nav-btn{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;background:var(--white);box-shadow:var(--shadow);font-size:26px;line-height:1;color:var(--text-mid);display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.nav-btn:hover:not(:disabled){background:var(--yellow);color:var(--text-dark);transform:scale(1.08);}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed;}
+.day-label{font-family:'Gmarket Sans',sans-serif;font-size:14px;font-weight:700;color:var(--text-mid);letter-spacing:.5px;text-align:center;}
+/* CARD */
+.card-wrap{position:relative;overflow:hidden;border-radius:var(--r);min-height:360px;}
+.card{background:var(--white);border-radius:var(--r);padding:28px 22px 24px;box-shadow:var(--shadow);display:none;animation:slideIn .4s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;}
+.card.active{display:block;}
+@keyframes slideIn{from{opacity:0;transform:translateX(48px) scale(.97);}to{opacity:1;transform:translateX(0) scale(1);}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-48px) scale(.97);}to{opacity:1;transform:translateX(0) scale(1);}}
+.card.slide-left{animation:slideInLeft .4s cubic-bezier(.4,0,.2,1);}
+.card-accent{position:absolute;top:0;left:0;right:0;height:5px;border-radius:var(--r) var(--r) 0 0;}
+.card-day-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--text-mid);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+.card-day-num{background:var(--yellow);padding:2px 9px;border-radius:999px;font-size:12px;color:var(--text-dark);}
+.card-sit{font-size:13px;color:var(--text-mid);margin-bottom:16px;display:flex;align-items:center;gap:6px;}
+.pron{font-family:'Gmarket Sans',sans-serif;font-weight:700;line-height:1.15;color:var(--text-dark);letter-spacing:-.5px;margin-bottom:6px;text-align:center;cursor:pointer;transition:transform .15s;white-space:nowrap;overflow:hidden;width:100%;display:block;}
+.pron:hover{transform:scale(1.03);}
+.jp-orig{font-family:'Noto Sans JP',sans-serif;font-size:14px;color:var(--text-light);font-weight:300;text-align:center;margin-bottom:5px;letter-spacing:1px;}
+.meaning{font-size:13px;color:var(--text-mid);text-align:center;margin-bottom:20px;}
+/* SPEAK BTN */
+.speak-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:linear-gradient(135deg,var(--yellow),var(--mint));color:var(--text-dark);font-size:14px;font-weight:700;border:none;border-radius:var(--rs);padding:14px 20px;cursor:pointer;box-shadow:0 4px 16px rgba(168,240,224,.4);transition:all .2s;font-family:'Noto Sans KR',sans-serif;}
+.speak-btn:hover{transform:translateY(-2px);}
+.speak-btn.speaking{background:linear-gradient(135deg,var(--mint),var(--mint-dark));animation:pulse .6s ease-in-out infinite alternate;}
+@keyframes pulse{from{box-shadow:0 4px 16px rgba(77,217,187,.3);}to{box-shadow:0 4px 28px rgba(77,217,187,.7);}}
+.sw{display:flex;align-items:center;gap:3px;height:18px;}
+.sw span{display:block;width:3px;background:var(--text-dark);border-radius:2px;animation:wave .8s ease-in-out infinite;}
+.sw span:nth-child(1){height:6px} .sw span:nth-child(2){height:14px;animation-delay:.15s} .sw span:nth-child(3){height:10px;animation-delay:.3s} .sw span:nth-child(4){height:16px;animation-delay:.45s} .sw span:nth-child(5){height:8px;animation-delay:.6s}
+@keyframes wave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.4)}}
+/* TIP BOX */
+.tip-box{margin-top:14px;background:linear-gradient(135deg,var(--yellow-light),var(--mint-light));border-radius:var(--rs);padding:14px 16px;border-left:4px solid var(--yellow-dark);}
+.tip-hdr{font-size:10px;font-weight:700;color:var(--coral);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;}
+.tip-txt{font-size:13px;color:var(--text-dark);line-height:1.65;}
+/* USAGE */
+.usage-box{margin-top:10px;background:var(--white);border-radius:var(--rs);padding:14px 16px;border:2px dashed var(--mint-dark);}
+.usage-hdr{font-size:10px;font-weight:700;color:var(--mint-dark);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.usage-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;}
+.usage-item:last-child{margin-bottom:0;}
+.usage-num{min-width:20px;height:20px;border-radius:50%;background:var(--mint);color:var(--text-dark);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.usage-pron{font-family:'Gmarket Sans',sans-serif;font-size:15px;font-weight:700;color:var(--text-dark);}
+.usage-jp{font-family:'Noto Sans JP',sans-serif;font-size:11px;color:var(--text-light);font-weight:300;margin-top:1px;}
+.usage-meaning{font-size:12px;color:var(--text-mid);margin-top:2px;line-height:1.4;}
+/* DONE BTN */
+.done-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:12px;background:var(--white);border:2.5px solid #E8E8F0;border-radius:var(--rs);padding:12px;font-size:14px;font-weight:700;color:var(--text-mid);cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;}
+.done-btn:hover{border-color:var(--mint-dark);color:var(--mint-dark);}
+.done-btn.completed{background:var(--mint-light);border-color:var(--mint-dark);color:var(--mint-dark);}
+/* XP TOAST */
+.xp-toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--text-dark);color:var(--yellow);font-family:'Gmarket Sans',sans-serif;font-size:14px;font-weight:700;padding:11px 22px;border-radius:999px;box-shadow:0 8px 32px rgba(0,0,0,.2);z-index:500;transition:transform .4s cubic-bezier(.4,0,.2,1);white-space:nowrap;}
+.xp-toast.show{transform:translateX(-50%) translateY(0);}
+/* LEVEL UP */
+.lvup-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(26,26,46,.82);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:24px;}
+.lvup-overlay.show{display:flex;}
+.lvup-card{background:var(--white);border-radius:var(--r);padding:36px 28px;text-align:center;max-width:340px;width:100%;animation:popIn .4s cubic-bezier(.4,0,.2,1);}
+.lvup-stars{font-size:44px;letter-spacing:4px;margin-bottom:10px;}
+.lvup-badge{display:inline-block;background:linear-gradient(135deg,var(--yellow),var(--mint));padding:5px 18px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;}
+.lvup-title{font-family:'Gmarket Sans',sans-serif;font-size:26px;font-weight:700;margin-bottom:6px;}
+.lvup-next{font-size:12px;color:var(--text-light);margin-bottom:6px;}
+.lvup-sub{font-size:13px;color:var(--text-mid);line-height:1.6;}
+.lvup-close{margin-top:20px;padding:13px 30px;background:linear-gradient(135deg,var(--yellow),var(--mint));border:none;border-radius:var(--rs);cursor:pointer;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;}
+/* COMPLETE */
+.comp-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(26,26,46,.7);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:24px;}
+.comp-overlay.show{display:flex;}
+.comp-card{background:var(--white);border-radius:var(--r);padding:36px 28px;text-align:center;max-width:360px;width:100%;animation:popIn .4s cubic-bezier(.4,0,.2,1);}
+@keyframes popIn{from{transform:scale(.82);opacity:0;}to{transform:scale(1);opacity:1;}}
+.comp-emoji{font-size:60px;margin-bottom:14px;}
+.comp-title{font-family:'Gmarket Sans',sans-serif;font-size:24px;font-weight:700;margin-bottom:8px;}
+.comp-sub{font-size:13px;color:var(--text-mid);line-height:1.6;}
+.close-overlay{margin-top:20px;padding:13px 30px;background:linear-gradient(135deg,var(--yellow),var(--mint));border:none;border-radius:var(--rs);cursor:pointer;font-size:14px;font-weight:700;font-family:'Noto Sans KR',sans-serif;}
+/* CONFETTI */
+.confetti-container{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:999;overflow:hidden;}
+.confetti-piece{position:absolute;border-radius:2px;animation:confettiFall 1.8s ease-in forwards;}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+/* NOTIF */
+.notif-banner{margin:8px 0 0;background:var(--purple-light);border:1.5px solid var(--purple);border-radius:var(--rs);padding:11px 14px;font-size:12px;color:var(--text-dark);display:flex;align-items:center;gap:8px;}
+.notif-banner.hidden{display:none;}
+.notif-btn{margin-left:auto;background:var(--purple);color:var(--white);border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;}
+.notif-x{background:none;border:none;cursor:pointer;font-size:14px;color:var(--text-light);padding:0;}
+@media(max-width:360px){.dot{width:23px;height:23px;font-size:8px;} .g-val{font-size:16px;} .dl-days{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="bg-blobs"><div class="blob blob-1"></div><div class="blob blob-2"></div><div class="blob blob-3"></div></div>
+<div class="xp-toast" id="xpToast">+10 XP!</div>
+<div class="container">
+  <header class="header">
+    <div class="header-badge">🇯🇵 30일 챌린지</div>
+    <h1 class="header-title">혼지쯔노 <span>니홍고</span></h1>
+    <p class="header-sub">本日の日本語 · 하루 한 문장 소리로 익혀요 🎵</p>
+  </header>
+
+  <!-- DEADLINE SETUP -->
+  <div class="deadline-setup" id="dlSetup">
+    <div class="dl-title">📅 30일 챌린지 마감일 설정</div>
+    <p class="dl-sub">30일 챌린지에 맞게 마감일을 정해요.<br>최대 30일 이내로 설정할 수 있어요!</p>
+    <div class="preset-row">
+      <button class="preset-btn" onclick="selPreset(this,10)">10일 안에</button>
+      <button class="preset-btn" onclick="selPreset(this,20)">20일 안에</button>
+      <button class="preset-btn" onclick="selPreset(this,30)">딱 30일</button>
+    </div>
+    <div class="custom-row">
+      <label>직접 설정</label>
+      <input type="date" id="dlPicker" onchange="onDatePick()">
+    </div>
+    <button class="start-btn" onclick="setDeadline()">챌린지 시작하기 🚀</button>
+  </div>
+
+  <!-- DEADLINE ACTIVE -->
+  <div class="dl-card" id="dlCard">
+    <div class="dl-accent"></div>
+    <button class="dl-reset" onclick="resetDeadline()">재설정</button>
+    <div class="dl-top">
+      <div>
+        <div class="dl-label">📅 마감까지</div>
+        <div class="dl-days" id="dlDays">— <span>일 남음</span></div>
+        <div class="dl-date" id="dlDateStr"></div>
+      </div>
+      <div>
+        <div class="dl-pace-val" id="dlPace">—</div>
+        <div class="dl-pace-lbl">하루 목표</div>
+      </div>
+    </div>
+    <div class="dl-bar-wrap"><div class="dl-bar-fill" id="dlBarFill" style="width:0%"></div></div>
+    <div class="dl-msg" id="dlMsg"></div>
+  </div>
+
+  <!-- NOTIF -->
+  <div class="notif-banner hidden" id="notifBanner">
+    <span>🔔</span><span>매일 오전 9시 학습 알림을 받으시겠어요?</span>
+    <button class="notif-btn" onclick="reqNotif()">알림 켜기</button>
+    <button class="notif-x" onclick="dismissNotif()">✕</button>
+  </div>
+
+  <!-- GAME STRIP -->
+  <div class="game-strip">
+    <div class="g-card streak"><div class="g-icon">🔥</div><div class="g-val" id="streakVal">0</div><div class="g-lbl">연속 학습일</div></div>
+    <div class="g-card xp"><div class="g-icon">⚡</div><div class="g-val" id="xpVal">0</div><div class="g-lbl">경험치 XP</div><div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpBar" style="width:0%"></div></div></div>
+    <div class="g-card lv"><div class="g-icon" id="lvIcon">🌱</div><div class="g-val" id="lvVal">Lv.1</div><div class="g-lbl" id="lvName">입문</div></div>
+  </div>
+  <div class="streak-banner" id="streakBanner">😢 어제 학습을 빠뜨렸어요. 연속 학습일이 초기화됐어요. 오늘부터 다시 시작해봐요!</div>
+
+  <!-- ROADMAP -->
+  <div class="roadmap">
+    <div class="rm-header"><span class="rm-label">📍 나의 여정</span><span class="rm-count" id="progCount">0 / 30 완료</span></div>
+    <div class="prog-wrap"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <div class="rm-dots" id="rmDots"></div>
+  </div>
+
+  <!-- DAY NAV -->
+  <div class="day-nav">
+    <button class="nav-btn" id="prevBtn" onclick="navigate(-1)">&#8249;</button>
+    <span class="day-label" id="dayLabel">DAY 1 · 오늘의 표현</span>
+    <button class="nav-btn" id="nextBtn" onclick="navigate(1)">&#8250;</button>
+  </div>
+  <div class="card-wrap" id="cardWrap"></div>
+</div>
+
+<div class="confetti-container" id="confetti"></div>
+
+<div class="lvup-overlay" id="lvupOverlay">
+  <div class="lvup-card">
+    <div class="lvup-stars">⭐⭐⭐</div>
+    <div class="lvup-badge">LEVEL UP!</div>
+    <div class="lvup-title" id="lvupTitle">레벨 업!</div>
+    <div class="lvup-next" id="lvupNext"></div>
+    <p class="lvup-sub" id="lvupSub"></p>
+    <button class="lvup-close" onclick="closeLvup()">계속하기 💪</button>
+  </div>
+</div>
+
+<div class="comp-overlay" id="compOverlay">
+  <div class="comp-card">
+    <div class="comp-emoji">🎌</div>
+    <div class="comp-title">30일 챌린지 완료!</div>
+    <p class="comp-sub">대단해요! 일본 여행에서<br>현지인과 대화할 준비가 됐어요 🎉<br><br>スゴイ！お疲れ様でした！</p>
+    <button class="close-overlay" onclick="closeComp()">다시 보기 🔁</button>
+  </div>
+</div>
+
+<script>
+// ── 30일 데이터 ──
+const days=[
+{pronunciation:"도-모-",japanese:"どうも",romaji:"Dōmo",meaning:"안녕하세요 / 감사합니다",situation:"가게 들어갈 때",situationIcon:"🏪",tip:"편의점·카페·옷가게 어디든 문 열고 들어갈 때 직원과 눈이 마주치면 '도-모-' 한 마디만 해보세요. 인사인지 감사인지 굳이 구분 안 해도 돼요. 일본인은 이 말 하나에 '아, 이 사람 일본 문화 아는구나'를 바로 느껴요.",usages:[{pron:"도-모 아리가또-",jp:"どうもありがとう",meaning:"고마워요 (캐주얼하게 감사)"},{pron:"도-모, 도-조",jp:"どうも、どうぞ",meaning:"여기요~ (물건 건넬 때)"}],accent:["FFE566","F5C800"]},
+{pronunciation:"스미마센-",japanese:"すみません",romaji:"Sumimasen",meaning:"죄송합니다 / 저기요-",situation:"식당에서 직원 부를 때",situationIcon:"🙏",tip:"일본 식당에서는 손을 번쩍 들거나 큰 소리로 부르면 실례예요. 직원이 근처를 지나갈 때 살짝 손을 들면서 '스미마센-' 하고 부르는 게 정석이에요. 사과와 호출을 하나로 해결하는 표현이에요.",usages:[{pron:"스미마센, 이꾸라데스까?",jp:"すみません、いくらですか？",meaning:"저기요, 얼마예요?"},{pron:"스미마센데시따",jp:"すみませんでした",meaning:"정말 죄송했습니다"}],accent:["A8F0E0","4DD9BB"]},
+{pronunciation:"아리가또- 고자이마스!",japanese:"ありがとうございます",romaji:"Arigatō gozaimasu",meaning:"정말 감사합니다!",situation:"진심으로 감사할 때",situationIcon:"🌸",tip:"감사 인사를 할 때 고개를 숙이는 각도가 중요해요. 가볍게 15도면 일상적인 감사, 30도 이상이면 진심 어린 감사예요. 말과 함께 자연스럽게 고개를 숙이는 것만으로도 현지인처럼 보여요.",usages:[{pron:"혼토-니 아리가또- 고자이마스",jp:"本当にありがとうございます",meaning:"정말 진심으로 감사합니다"},{pron:"이로이로 아리가또-",jp:"いろいろありがとう",meaning:"이것저것 다 고마워"}],accent:["FFB3B3","FF6B6B"]},
+{pronunciation:"이따다끼마스!",japanese:"いただきます",romaji:"Itadakimasu",meaning:"잘 먹겠습니다!",situation:"밥 먹기 전에",situationIcon:"🍜",tip:"음식이 나오면 양손을 모으고 가볍게 고개를 숙이며 '이따다끼마스!'라고 해야 해요. 혼자 먹을 때도 마찬가지예요. '음식에 대한 감사'를 표현하는 일본 특유의 문화라 현지인들이 특히 좋아해요.",usages:[{pron:"이따다키마스, 오이시소-!",jp:"いただきます、おいしそう！",meaning:"잘 먹겠습니다, 맛있겠다!"},{pron:"모- 이따다이테 이이데스까?",jp:"もういただいていいですか？",meaning:"이제 먹어도 될까요?"}],accent:["FFD6A5","FF9500"]},
+{pronunciation:"고찌소-사마데시따",japanese:"ごちそうさまでした",romaji:"Gochisōsama deshita",meaning:"잘 먹었습니다",situation:"식사 후 식당 나올 때",situationIcon:"🙌",tip:"계산 후 식당을 나설 때 직원 쪽으로 살짝 몸을 돌리며 말해보세요. 대부분의 직원이 환하게 웃으며 인사를 돌려줘요. 외국인이 이 말을 하면 특히 더 기뻐해요.",usages:[{pron:"오이시캇따데스!",jp:"おいしかったです！",meaning:"맛있었어요!"},{pron:"마따 키마스!",jp:"また来ます！",meaning:"또 올게요! (단골 되는 마법)"}],accent:["A8F0E0","4DD9BB"]},
+{pronunciation:"오네가이시마스",japanese:"お願いします",romaji:"Onegaishimasu",meaning:"부탁드립니다",situation:"주문하거나 부탁할 때",situationIcon:"📋",tip:"먹고 싶은 메뉴를 손으로 가리키며 '코레, 오네가이시마스(이거 주세요)'라고 하면 말 한마디 못 해도 주문이 끝나요. 일본은 메뉴 사진·모형 문화가 잘 돼있어서 이 패턴 하나면 OK예요.",usages:[{pron:"코레, 오네가이시마스",jp:"これ、お願いします",meaning:"이거 부탁해요 (가리키며 주문)"},{pron:"미즈 오네가이시마스",jp:"水お願いします",meaning:"물 주세요"}],accent:["C5A8FF","9966FF"]},
+{pronunciation:"다이죠-부데스",japanese:"大丈夫です",romaji:"Daijōbu desu",meaning:"괜찮아요",situation:"거절하거나 안심시킬 때",situationIcon:"👌",tip:"편의점에서 '봉투 필요하세요?', 식당에서 '다른 메뉴 더 드릴까요?' 모두 '다이죠-부데스'로 깔끔하게 거절할 수 있어요. 손을 흔들거나 '노'라고 하는 것보다 훨씬 자연스럽고 배려 있는 인상을 줘요.",usages:[{pron:"다이죠-부데스까?",jp:"大丈夫ですか？",meaning:"괜찮으세요? (걱정해줄 때)"},{pron:"다이죠-부, 이리마셍",jp:"大丈夫、いりません",meaning:"괜찮아요, 필요 없어요"}],accent:["FFE566","F5C800"]},
+{pronunciation:"도코데스까?",japanese:"どこですか？",romaji:"Doko desu ka?",meaning:"어디예요?",situation:"장소를 물어볼 때",situationIcon:"🗺️",tip:"길을 잃었을 때 스마트폰으로 목적지 이름을 보여주면서 '도코데스까?'라고 묻는 게 가장 효과적이에요. 일본인은 길을 물으면 직접 데려다 주거나 지도 앱을 켜서 같이 확인해줄 만큼 친절해요.",usages:[{pron:"토이레와 도코데스까?",jp:"トイレはどこですか？",meaning:"화장실이 어디예요?"},{pron:"에키와 도코데스까?",jp:"駅はどこですか？",meaning:"역이 어디예요?"}],accent:["FFD6A5","FF9500"]},
+{pronunciation:"이꾸라데스까?",japanese:"いくらですか？",romaji:"Ikura desu ka?",meaning:"얼마예요?",situation:"쇼핑할 때",situationIcon:"💴",tip:"아사쿠사 전통 시장이나 소규모 잡화점처럼 가격표가 없는 곳에서 물건을 들고 '이꾸라데스까?'라고 물으면 돼요. 계산기로 숫자를 보여주는 가게가 많아서 서로 확인하며 소통할 수 있어요.",usages:[{pron:"젠부데 이꾸라데스까?",jp:"全部でいくらですか？",meaning:"전부 합쳐서 얼마예요?"},{pron:"야스꾸 나리마스까?",jp:"安くなりますか？",meaning:"좀 깎아줄 수 있어요?"}],accent:["FFB3B3","FF6B6B"]},
+{pronunciation:"와까리마센",japanese:"わかりません",romaji:"Wakarimasen",meaning:"모르겠어요",situation:"이해가 안 될 때",situationIcon:"🤔",tip:"일본인이 빠르게 설명할 때 이해 못 했는데 그냥 고개를 끄덕이면 나중에 더 곤란해져요. '와까리마센'을 솔직하게 말하면 상대가 오히려 더 친절해지고, 천천히 다시 설명하거나 적어서 보여줘요.",usages:[{pron:"니홍고와 와까리마센",jp:"日本語はわかりません",meaning:"일본어를 모르겠어요 (솔직하게!)"},{pron:"스코시 와까리마스",jp:"少しわかります",meaning:"조금은 알아요"}],accent:["A8F0E0","4DD9BB"]},
+{pronunciation:"모-잇까이 오네가이시마스",japanese:"もう一回お願いします",romaji:"Mō ikkai onegaishimasu",meaning:"한 번 더 부탁드려요",situation:"못 들었을 때",situationIcon:"👂",tip:"신칸센 예약이나 관광안내소에서 직원이 빠르게 설명할 때 이 표현이 진짜 빛나요. 당황해서 그냥 흘려보내는 것보다 적극적으로 요청하는 태도를 일본인은 오히려 긍정적으로 봐요.",usages:[{pron:"윳꾸리 이떼 쿠다사이",jp:"ゆっくり言ってください",meaning:"천천히 말해 주세요"},{pron:"카이떼 쿠다사이",jp:"書いてください",meaning:"써 주세요"}],accent:["C5A8FF","9966FF"]},
+{pronunciation:"아, 소-난데스네-",japanese:"あ、そうなんですね",romaji:"A, sō nan desu ne",meaning:"아, 그렇군요-",situation:"맞장구칠 때",situationIcon:"💬",tip:"일본인과 대화할 때 리액션이 없으면 상대가 '내 말이 이해되나?' 불안해해요. '소-난데스네-'를 고개를 끄덕이며 중간중간 끼워 넣으면 대화가 훨씬 부드럽게 흘러가요.",usages:[{pron:"에-, 소-나노-",jp:"え、そうなの",meaning:"에-, 그래? (친한 친구 사이)"},{pron:"나루호도-",jp:"なるほど",meaning:"아, 이해됐어 (고급 맞장구)"}],accent:["FFE566","F5C800"]},
+{pronunciation:"춋또 맛떼 쿠다사이",japanese:"ちょっと待ってください",romaji:"Chotto matte kudasai",meaning:"잠깐만요",situation:"잠깐 멈춰달라고 할 때",situationIcon:"✋",tip:"버스에서 내리기 직전, 계산 중 영수증을 확인하고 싶을 때, 상대가 말이 너무 빠를 때 쓸 수 있어요. 급한 상황엔 '춋또!' 두 글자만 외쳐도 돼요.",usages:[{pron:"춋또 타카이데스네-",jp:"ちょっと高いですね",meaning:"좀 비싸네요 (부드럽게)"},{pron:"춋또 이이데스까?",jp:"ちょっといいですか？",meaning:"잠깐 괜찮으세요?"}],accent:["FFD6A5","FF9500"]},
+{pronunciation:"오이시-!",japanese:"おいしい！",romaji:"Oishī!",meaning:"맛있다!",situation:"음식을 먹을 때",situationIcon:"😋",tip:"라멘집이나 이자카야에서 첫 한 입 먹은 뒤 주방 쪽을 살짝 보며 '오이시-!'라고 하면 요리사가 정말 기뻐해요. 눈을 살짝 감고 고개를 끄덕이며 말하면 더 진심처럼 보여요.",usages:[{pron:"스고쿠 오이시-데스!",jp:"すごくおいしいです！",meaning:"진짜 너무 맛있어요! (강조)"},{pron:"이치방 오이시-!",jp:"一番おいしい！",meaning:"제일 맛있어!"}],accent:["FFB3B3","FF6B6B"]},
+{pronunciation:"스고이-!",japanese:"すごい！",romaji:"Sugoi!",meaning:"대박! / 굉장해요!",situation:"감탄할 때",situationIcon:"🤩",tip:"후지산 전망대나 팀랩 같은 곳에서 감탄스러운 순간에 주변 일본인과 눈을 마주치며 '스고이-!'라고 하면 그것만으로 대화가 시작돼요. 끝을 길게 늘일수록 감탄이 커 보여요.",usages:[{pron:"스고이네-!",jp:"すごいね！",meaning:"대박이다! (친구한테 캐주얼)"},{pron:"메챠쿠챠 스고이!",jp:"めちゃくちゃすごい！",meaning:"완전 미친 듯이 대박!"}],accent:["A8F0E0","4DD9BB"]},
+{pronunciation:"카와이이-!",japanese:"かわいい！",romaji:"Kawaii!",meaning:"귀여워-!",situation:"귀여운 걸 봤을 때",situationIcon:"🥰",tip:"돈키호테나 로프트 같은 잡화점에서 상품을 집어들며 '카와이이-!'라고 하면 점원이나 손님이 바로 반응해줘요. 일본 상점가는 '귀여움'이 핵심 문화라서 이 단어 하나로 공감대가 생겨요.",usages:[{pron:"메챠 카와이이!",jp:"めちゃかわいい！",meaning:"완전 귀여워! (요즘 젊은이 스타일)"},{pron:"카와이스기루-!",jp:"かわいすぎる！",meaning:"너무 귀여워서 죽겠어!"}],accent:["FFE566","F5C800"]},
+{pronunciation:"타노시-데스!",japanese:"楽しいです！",romaji:"Tanoshī desu!",meaning:"즐거워요! / 재미있어요!",situation:"즐거운 상황에서",situationIcon:"🎉",tip:"축제나 이벤트에서 '타노시-!'라고 하면 주변 일본인들이 엄청 반가워해요. '타노시캇따데스(즐거웠어요)'로 바꾸면 끝난 후에도 자연스럽게 쓸 수 있어요.",usages:[{pron:"타노시캇따데스!",jp:"楽しかったです！",meaning:"즐거웠어요! (과거형)"},{pron:"이치방 타노시캇따데스",jp:"一番楽しかったです",meaning:"제일 재미있었어요"}],accent:["C5A8FF","9966FF"]},
+{pronunciation:"키레이데스네-",japanese:"きれいですね",romaji:"Kirei desu ne",meaning:"예쁘네요 / 아름답네요",situation:"풍경·물건이 아름다울 때",situationIcon:"🌸",tip:"교토 기온이나 벚꽃 명소에서 옆에 있는 일본인에게 '키레이데스네-'라고 말을 건네면 자연스럽게 대화가 시작돼요. 사람에게도, 풍경에도, 물건에도 모두 쓸 수 있는 편리한 표현이에요.",usages:[{pron:"스고쿠 키레이데스!",jp:"すごくきれいです！",meaning:"정말 예뻐요! (강조)"},{pron:"키레이나 오미세데스네-",jp:"きれいなお店ですね",meaning:"예쁜 가게네요 (인테리어 칭찬)"}],accent:["FFD6A5","FF9500"]},
+{pronunciation:"간바리마스!",japanese:"頑張ります！",romaji:"Ganbarimasu!",meaning:"열심히 할게요! / 파이팅!",situation:"격려하거나 다짐할 때",situationIcon:"💪",tip:"'간바레!'는 응원, '간바리마스'는 '나 열심히 할게요'예요. 일본 스포츠 경기장에서 '간바레-!'를 외치면 현지인들이 박수를 보내줘요. 일본 특유의 응원 문화예요.",usages:[{pron:"오타가이니 간바리마쇼-!",jp:"お互いに頑張りましょう！",meaning:"서로 열심히 합시다!"},{pron:"간바레-!",jp:"頑張れー！",meaning:"파이팅! (응원할 때 외치는 말)"}],accent:["FFB3B3","FF6B6B"]},
+{pronunciation:"야싸시-데스네-",japanese:"優しいですね",romaji:"Yasashii desu ne",meaning:"친절하시네요 / 다정하시네요",situation:"상대가 도와줬을 때",situationIcon:"🤝",tip:"누군가가 도움을 줬을 때 '아리가또-'에 이 표현을 더하면 훨씬 따뜻하게 감사를 전할 수 있어요. 특히 길을 안내해준 현지인이나 친절한 숙소 직원에게 쓰면 상대방이 굉장히 기뻐해요.",usages:[{pron:"혼토-니 야싸시-데스네-",jp:"本当に優しいですね",meaning:"정말로 친절하시네요"},{pron:"오키니이리데스",jp:"お気に入りです",meaning:"마음에 들어요 (물건·사람 모두 가능)"}],accent:["A8F0E0","4DD9BB"]},
+{pronunciation:"도코카라 키마시따까?",japanese:"どこから来ましたか？",romaji:"Doko kara kimashita ka?",meaning:"어디서 오셨어요?",situation:"상대방 출신을 물을 때",situationIcon:"✈️",tip:"이 질문을 먼저 받으면 '캉코쿠카라 키마시따(한국에서 왔어요)'라고 답하면 돼요. 일본인들은 한국인이 일본어로 대화하려는 모습 자체를 굉장히 반가워하고 응원해줘요.",usages:[{pron:"캉코쿠카라 키마시따",jp:"韓国から来ました",meaning:"한국에서 왔어요"},{pron:"오쿠니와 도코데스까?",jp:"お国はどこですか？",meaning:"고향이 어디세요? (격식 있는 표현)"}],accent:["FFE566","F5C800"]},
+{pronunciation:"스키데스!",japanese:"好きです！",romaji:"Suki desu!",meaning:"좋아요! / 좋아해요!",situation:"뭔가 마음에 들 때",situationIcon:"❤️",tip:"'와타시와 라-멘가 스키데스(나는 라멘을 좋아해요)'처럼 앞에 좋아하는 것을 붙이면 자기소개가 돼요. 일본인과 공통 관심사를 발견할 때 가장 자연스럽게 대화가 이어지는 표현이에요.",usages:[{pron:"닛폰가 스키데스!",jp:"日本が好きです！",meaning:"일본을 좋아해요!"},{pron:"이치방 스키데스",jp:"一番好きです",meaning:"제일 좋아해요 (최애 표현)"}],accent:["FFD6A5","FF9500"]},
+{pronunciation:"이- 오텐키데스네-",japanese:"いいお天気ですね",romaji:"Ii otenki desu ne",meaning:"날씨 좋네요",situation:"가벼운 대화 시작할 때",situationIcon:"☀️",tip:"일본인은 날씨 얘기로 대화를 시작하는 걸 좋아해요. 처음 만난 숙소 사장님이나 단골 가게 주인에게 '이- 오텐키데스네-'라고 말을 건네면 자연스럽게 대화가 이어져요.",usages:[{pron:"아츠이데스네-",jp:"暑いですね",meaning:"덥네요 (여름에 공감 대화)"},{pron:"사무이데스네-",jp:"寒いですね",meaning:"춥네요 (겨울에 공감 대화)"}],accent:["FFB3B3","FF6B6B"]},
+{pronunciation:"도-이따시마시떼",japanese:"どういたしまして",romaji:"Dō itashimashite",meaning:"천만에요 / 별말씀을요",situation:"감사 인사를 받을 때",situationIcon:"😊",tip:"'아리가또-'를 들었을 때 그냥 웃기만 하지 말고 '도-이따시마시떼'라고 답해보세요. 이 말 한 마디면 대화가 쌍방향이 돼요. 친한 사이엔 '이-에 이-에(아니에요 아니에요)'라고 해도 자연스러워요.",usages:[{pron:"이-에 이-에",jp:"いえ、いえ",meaning:"아니에요 아니에요 (겸손한 답변)"},{pron:"오야쿠니 타떼레바 요캇따데스",jp:"お役に立てればよかったです",meaning:"도움이 됐다면 다행이에요 (고급)"}],accent:["A8F0E0","4DD9BB"]},
+{pronunciation:"나마에와 난데스까?",japanese:"お名前は何ですか？",romaji:"Onamae wa nan desu ka?",meaning:"이름이 뭐예요?",situation:"처음 만나 이름을 물을 때",situationIcon:"👋",tip:"'와따시노 나마에와 OOO데스(제 이름은 OOO예요)'로 자기소개를 한 뒤 물으면 자연스러운 첫 만남이 돼요. 일본인은 처음 만나면 정중히 이름을 묻는 문화가 있어요.",usages:[{pron:"와따시노 나마에와 OOO데스",jp:"私の名前はOOOです",meaning:"제 이름은 OOO예요"},{pron:"요로시쿠 오네가이시마스",jp:"よろしくお願いします",meaning:"잘 부탁드려요 (첫 만남 마무리)"}],accent:["C5A8FF","9966FF"]},
+{pronunciation:"나니가 오스스메데스까?",japanese:"何がおすすめですか？",romaji:"Nani ga osusume desu ka?",meaning:"뭐가 추천이에요?",situation:"메뉴나 상품을 고를 때",situationIcon:"🍽️",tip:"식당에서 이 한 마디면 직원이 자신 있는 메뉴를 소개해줘요. 반드시 맛있는 걸 먹을 수 있는 비결이에요. 가게에서 쓸 때도 직원이 적극적으로 추천해줘요.",usages:[{pron:"오스스메와 나니데스까?",jp:"おすすめは何ですか？",meaning:"추천이 뭐예요? (같은 표현 변형)"},{pron:"코레가 오스스메데스",jp:"これがおすすめです",meaning:"이게 추천이에요 (직원이 답할 때)"}],accent:["FFE566","F5C800"]},
+{pronunciation:"요야쿠가 아리마스",japanese:"予約があります",romaji:"Yoyaku ga arimasu",meaning:"예약이 있어요",situation:"레스토랑·호텔 도착 시",situationIcon:"📖",tip:"인기 라멘집이나 오마카세 레스토랑은 예약 없이 가면 못 먹는 경우가 많아요. '예약 확인을 부탁드려요'까지 덧붙이면 더 자연스러워요. 예약자 이름은 스마트폰으로 보여주면 돼요.",usages:[{pron:"OOO데 요야쿠 시떼 이마스",jp:"OOOで予約しています",meaning:"OOO 이름으로 예약했어요"},{pron:"요야쿠나시데 하이레마스까?",jp:"予約なしで入れますか？",meaning:"예약 없이 들어갈 수 있어요?"}],accent:["FFD6A5","FF9500"]},
+{pronunciation:"카이케이 오네가이시마스",japanese:"お会計お願いします",romaji:"Okaikei onegaishimasu",meaning:"계산 부탁드려요",situation:"식당에서 계산할 때",situationIcon:"💳",tip:"일본에서는 이 표현이 가장 자연스러워요. '베츠베츠데 오네가이시마스(따로따로 계산)'라고 하면 각자 계산도 가능해요. 일본은 더치페이 문화가 일상적이에요.",usages:[{pron:"베츠베츠데 오네가이시마스",jp:"別々でお願いします",meaning:"따로따로 계산해 주세요 (더치페이)"},{pron:"쿠레짓또카-도 쓰카에마스까?",jp:"クレジットカード使えますか？",meaning:"신용카드 쓸 수 있어요?"}],accent:["FFB3B3","FF6B6B"]},
+{pronunciation:"모또 유꾸리 하나시떼 쿠다사이",japanese:"もっとゆっくり話してください",romaji:"Motto yukkuri hanashite kudasai",meaning:"더 천천히 말해 주세요",situation:"말이 너무 빠를 때",situationIcon:"🐢",tip:"'와까리마센'보다 한 단계 업그레이드된 표현이에요. 이 표현을 알고 있으면 일본어로 대화할 자신감이 생겨요. 상대방도 이 말을 들으면 '오, 일본어 배우고 있구나!' 하고 더 친절하게 대해줘요.",usages:[{pron:"모-이치도 이떼 쿠다사이",jp:"もう一度言ってください",meaning:"한 번 더 말해 주세요"},{pron:"카나데 카이떼 쿠다사이",jp:"かなで書いてください",meaning:"히라가나로 써 주세요"}],accent:["A8F0E0","4DD9BB"]},
+{pronunciation:"타스케떼 쿠다사이!",japanese:"助けてください！",romaji:"Tasukete kudasai!",meaning:"도와주세요!",situation:"긴급 상황에서",situationIcon:"🆘",tip:"외워두고 절대 쓰지 않아야 할 표현이지만, 알고 있으면 마음이 든든해요. 큰 소리로 외치면 주변 일본인들이 바로 달려와요.",usages:[{pron:"케이사쯔오 욘데 쿠다사이",jp:"警察を呼んでください",meaning:"경찰을 불러주세요"},{pron:"큐-큐-샤오 욘데 쿠다사이",jp:"救急車を呼んでください",meaning:"구급차를 불러주세요"}],accent:["C5A8FF","9966FF"]},
+{pronunciation:"마따 아이마쇼-!",japanese:"また会いましょう！",romaji:"Mata aimashō!",meaning:"또 만나요!",situation:"특별한 작별 인사",situationIcon:"🌟",tip:"이 표현으로 30일 챌린지를 마무리해요. 여행에서 만난 소중한 인연에게 이 말을 건네면, '다음에 꼭 만나요'라는 진심이 담긴 작별이 돼요. 일본에서의 모든 만남에 꼭 써보세요!",usages:[{pron:"키또 마따 아이마쇼-",jp:"きっとまた会いましょう",meaning:"꼭 다시 만나요 (강한 의지)"},{pron:"이츠마데모 오겡끼데",jp:"いつまでもお元気で",meaning:"언제까지나 건강하세요 (진심 어린 작별)"}],accent:["FFE566","F5C800"]}
+];
+
+// ── 레벨 시스템 ──
+// XP 설계: 30문장 × 10XP = 300XP (기본)
+//           + 연속 학습 보너스: 하루 첫 완료 시 +5XP, 최대 30일 × 5 = 150XP 가능하지만
+//           실제 완주자 기준 총 XP = 300(기본) + 최대 100(연속보너스) = 약 300~400XP
+// → Lv.5(400 MAX) 달성 = 30문장 완료 + 꾸준한 연속 학습 모두 달성 시
+// → 400 초과분은 누적하지 않고 400으로 고정 (MAX 표시)
+const MAX_XP = 400;
+const LEVELS=[
+  {min:0,  max:79, lv:1,name:"입문자",      icon:"🌱",msg:"첫 발을 내딛었어요! 이제 일본어의 문이 열렸어요."},
+  {min:80, max:159,lv:2,name:"기초 학습자",  icon:"📖",msg:"기본기가 생겼어요! 편의점·식당에서 당황하지 않아요."},
+  {min:160,max:249,lv:3,name:"여행 준비 완료",icon:"🎒",msg:"일본 혼자 여행 OK! 현지에서 살아남을 수 있어요."},
+  {min:250,max:349,lv:4,name:"현지 소통러",  icon:"🗾",msg:"현지인과 간단한 대화가 가능해요! 진짜 여행자가 됐어요."},
+  {min:350,max:400,lv:5,name:"통역사 제자",  icon:"🎌",msg:"30일 완주 달성! 혼지쯔노 니홍고 수료증을 드려요 🎉"}
+];
+// XP 구조:
+//   기본: 문장 1개 완료 = +10 XP (30개 전부 = 300 XP → Lv.4 후반)
+//   연속: 새 학습일 첫 완료 시 streak ≥ 2이면 +10 보너스 (총 최대 +290... 은 아니고)
+//         실제 연속 보너스는 하루 1회 → 꾸준히 30일 연속이면 +29 × 10 = +290 → 초과 → 400 cap
+//   → 30문장 완주(300) + 연속 학습(50~100) ≈ 350~400 → Lv.5 도달 가능
+//   → 400을 넘으면 MAX(400)으로 고정
+const XP_BASE=10, XP_STREAK=10; // 연속 보너스를 10으로 올려 완주+연속이면 400 MAX 달성 가능
+
+// ── STATE ──
+const STORE='honjitsu_v3';
+function loadSt(){try{const r=localStorage.getItem(STORE);if(r)return JSON.parse(r);}catch(e){}return{completedDays:[],xp:0,streak:0,lastDate:null,notifOff:false,deadline:null,startDate:null};}
+function saveSt(){localStorage.setItem(STORE,JSON.stringify(st));}
+let st=loadSt(), curDay=0, slideDir='right', selDate=null;
+
+function today(){return new Date().toISOString().slice(0,10);}
+
+// ── DEADLINE ──
+function selPreset(btn,n){
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  const d=new Date(); d.setDate(d.getDate()+n);
+  selDate=d.toISOString().slice(0,10);
+  document.getElementById('dlPicker').value=selDate;
+}
+function onDatePick(){selDate=document.getElementById('dlPicker').value;document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('sel'));}
+function setDeadline(){
+  if(!selDate){const d=new Date();d.setDate(d.getDate()+30);selDate=d.toISOString().slice(0,10);}
+  if(selDate<=today()){alert('오늘 이후의 날짜를 선택해주세요!');return;}
+  // 30일 이내 체크
+  const maxD=new Date();maxD.setDate(maxD.getDate()+30);
+  if(new Date(selDate)>maxD){alert('마감일은 오늘로부터 최대 30일 이내로 설정해주세요!');return;}
+  st.deadline=selDate; st.startDate=today(); saveSt();
+  document.getElementById('dlSetup').style.display='none';
+  renderDl();
+}
+function resetDeadline(){
+  if(!confirm('마감일을 다시 설정할까요?'))return;
+  st.deadline=null; st.startDate=null; saveSt();
+  document.getElementById('dlCard').classList.remove('show');
+  document.getElementById('dlSetup').style.display='';
+  selDate=null;
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('dlPicker').value='';
+  // Re-apply min/max
+  const tom2=new Date();tom2.setDate(tom2.getDate()+1);
+  const maxDl2=new Date();maxDl2.setDate(maxDl2.getDate()+30);
+  document.getElementById('dlPicker').min=tom2.toISOString().slice(0,10);
+  document.getElementById('dlPicker').max=maxDl2.toISOString().slice(0,10);
+}
+function renderDl(){
+  if(!st.deadline)return;
+  const card=document.getElementById('dlCard'); card.classList.add('show');
+  const now=new Date(today()), dl=new Date(st.deadline);
+  const dLeft=Math.ceil((dl-now)/86400000);
+  const done=st.completedDays.length, rem=30-done;
+  const opts={month:'long',day:'numeric',weekday:'short'};
+  document.getElementById('dlDateStr').textContent=dl.toLocaleDateString('ko-KR',opts)+' 마감';
+  if(dLeft<=0){
+    card.className='dl-card show '+(done>=30?'done':'danger');
+    document.getElementById('dlDays').innerHTML=done>=30?'완료! <span>🎉</span>':'마감 지남 <span>😓</span>';
+    document.getElementById('dlPace').textContent=done+'/30';
+    document.getElementById('dlBarFill').style.width=(done/30*100)+'%';
+    document.getElementById('dlMsg').textContent=done>=30?'30일 챌린지를 완주했어요! 정말 대단해요 🎌':'마감이 지났지만 아직 '+rem+'개가 남았어요. 지금이라도 계속 도전해봐요!';
+    return;
+  }
+  const pace=dLeft>0?Math.ceil(rem/dLeft):rem;
+  const pct=Math.round(done/30*100);
+  let status='safe';
+  if(done>=30)status='done';
+  else if(dLeft<=3&&rem>0)status='danger';
+  else if(pace>=2)status='warn';
+  card.className='dl-card show '+status;
+  document.getElementById('dlDays').innerHTML=dLeft+' <span>일 남음</span>';
+  document.getElementById('dlPace').textContent='하루 '+pace+'개';
+  document.getElementById('dlBarFill').style.width=pct+'%';
+  let msg='';
+  if(done>=30)msg='🎉 완주! 마감 전에 다 끝냈어요!';
+  else if(status==='safe'&&pace<=1)msg='😊 여유 있어요! 하루 하나씩만 하면 마감 전에 완주해요. ('+done+'/30 완료)';
+  else if(status==='warn')msg='⚠️ 조금 서둘러야 해요! 하루 '+pace+'개씩 하면 마감 전에 완주할 수 있어요.';
+  else if(status==='danger')msg='🚨 '+dLeft+'일 안에 '+rem+'개를 해야 해요! 지금 당장 시작해요!';
+  document.getElementById('dlMsg').textContent=msg;
+}
+
+// ── STREAK ──
+function checkStreak(){
+  if(!st.lastDate)return;
+  const diff=Math.round((new Date(today())-new Date(st.lastDate))/86400000);
+  if(diff>1&&st.streak>0){st.streak=0;saveSt();document.getElementById('streakBanner').classList.add('show');}
+}
+
+// ── LEVEL ──
+function getLv(xp){return LEVELS.find(l=>xp>=l.min&&xp<=l.max)||LEVELS[LEVELS.length-1];}
+function getXpPct(xp){const lv=getLv(xp);if(lv.lv===LEVELS.length)return 100;return Math.min(100,Math.round((xp-lv.min)/(lv.max-lv.min+1)*100));}
+function updateGameUI(){
+  const lv=getLv(st.xp);
+  const isMax = st.xp >= MAX_XP;
+  document.getElementById('streakVal').textContent=st.streak;
+  document.getElementById('xpVal').textContent= isMax ? 'MAX' : st.xp;
+  document.getElementById('xpBar').style.width= isMax ? '100%' : getXpPct(st.xp)+'%';
+  if(isMax) document.getElementById('xpBar').classList.add('maxed');
+  else document.getElementById('xpBar').classList.remove('maxed');
+  document.getElementById('lvVal').textContent='Lv.'+lv.lv;
+  document.getElementById('lvName').textContent= isMax ? '만렙 달성!' : lv.name;
+  document.getElementById('lvIcon').textContent= isMax ? '🏆' : lv.icon;
+}
+function showXpToast(msg){const t=document.getElementById('xpToast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function showLvUp(lv){
+  document.getElementById('lvupTitle').textContent=lv.icon+' '+lv.name+' 달성!';
+  const nxt=LEVELS.find(l=>l.lv===lv.lv+1);
+  const isMax=st.xp>=MAX_XP;
+  document.getElementById('lvupNext').textContent=
+    isMax ? '🏆 400 XP MAX 달성! 만렙이에요!' :
+    nxt ? '다음 레벨까지 '+(nxt.min-st.xp)+' XP' : '';
+  document.getElementById('lvupSub').textContent=lv.msg;
+  document.getElementById('lvupOverlay').classList.add('show');
+  launchConfetti();
+}
+function closeLvup(){document.getElementById('lvupOverlay').classList.remove('show');}
+
+// ── INIT ──
+function init(){
+  checkStreak();
+  if(st.deadline){document.getElementById('dlSetup').style.display='none';renderDl();}
+  const tom=new Date();tom.setDate(tom.getDate()+1);
+  const maxDl=new Date();maxDl.setDate(maxDl.getDate()+30);
+  document.getElementById('dlPicker').min=tom.toISOString().slice(0,10);
+  document.getElementById('dlPicker').max=maxDl.toISOString().slice(0,10);
+  buildCards(); buildRm(); updateProg(); updateGameUI(); showDay(0,'right');
+  if(!st.notifOff&&typeof Notification!=='undefined'&&Notification.permission!=='granted')
+    document.getElementById('notifBanner').classList.remove('hidden');
+}
+
+// ── BUILD CARDS ──
+function buildCards(){
+  document.getElementById('cardWrap').innerHTML=days.map((d,i)=>`
+    <div class="card" id="card${i}">
+      <div class="card-accent" style="background:linear-gradient(90deg,#${d.accent[0]},#${d.accent[1]})"></div>
+      <div class="card-day-tag"><span class="card-day-num">DAY ${i+1}</span> 일본어 한 문장 🎵</div>
+      <div class="card-sit"><span>${d.situationIcon}</span><span>${d.situation}</span></div>
+      <div class="pron" id="pron${i}" onclick="speakDay(${i})"
+        style="background:linear-gradient(120deg,#${d.accent[0]}88 0%,transparent 80%);border-radius:12px;padding:8px 4px">
+        ${d.pronunciation}</div>
+      <div class="jp-orig">${d.japanese} · ${d.romaji}</div>
+      <div class="meaning">💡 ${d.meaning}</div>
+      <button class="speak-btn" id="spkBtn${i}" onclick="speakDay(${i})">
+        <div class="sw" id="sw${i}" style="display:none"><span></span><span></span><span></span><span></span><span></span></div>
+        <span id="spkLbl${i}">🔊 &nbsp;소리로 들어보기</span>
+      </button>
+      <div class="tip-box"><div class="tip-hdr">✨ 통역사 팁</div><div class="tip-txt">${d.tip}</div></div>
+      <div class="usage-box">
+        <div class="usage-hdr">💬 이렇게도 써봐요!</div>
+        ${d.usages.map((u,ui)=>`
+          <div class="usage-item">
+            <div class="usage-num">${ui+1}</div>
+            <div><div class="usage-pron">${u.pron}</div><div class="usage-jp">${u.jp}</div><div class="usage-meaning">${u.meaning}</div></div>
+          </div>`).join('')}
+      </div>
+      <button class="done-btn ${st.completedDays.includes(i)?'completed':''}" id="doneBtn${i}" onclick="markDone(${i})">
+        ${st.completedDays.includes(i)?'✅ 오늘 완료했어요!':'☑️ 오늘 표현 익혔어요!'}
+      </button>
+    </div>`).join('');
+}
+function buildRm(){
+  document.getElementById('rmDots').innerHTML=days.map((_,i)=>{
+    const cls=st.completedDays.includes(i)?'done':i===curDay?'active':'locked';
+    return `<div class="dot ${cls}" onclick="jumpTo(${i})" title="DAY ${i+1}">${st.completedDays.includes(i)?'':i+1}</div>`;
+  }).join('');
+}
+function updateProg(){
+  const c=st.completedDays.length;
+  document.getElementById('progCount').textContent=c+' / 30 완료';
+  document.getElementById('progFill').style.width=(c/30*100)+'%';
+}
+function fitPron(idx){
+  const el=document.getElementById('pron'+idx); if(!el)return;
+  const mw=el.parentElement.clientWidth-48; let s=50; el.style.fontSize=s+'px';
+  while(el.scrollWidth>mw&&s>22){s-=2;el.style.fontSize=s+'px';}
+}
+function showDay(idx,dir='right'){
+  document.querySelectorAll('.card').forEach(c=>c.classList.remove('active','slide-left'));
+  const card=document.getElementById('card'+idx);
+  card.classList.add('active'); if(dir==='left')card.classList.add('slide-left');
+  document.getElementById('dayLabel').textContent='DAY '+(idx+1)+' · '+days[idx].situation;
+  document.getElementById('prevBtn').disabled=idx===0;
+  document.getElementById('nextBtn').disabled=idx===days.length-1;
+  buildRm(); requestAnimationFrame(()=>fitPron(idx));
+}
+function navigate(dir){const n=curDay+dir;if(n<0||n>=days.length)return;slideDir=dir>0?'right':'left';curDay=n;showDay(curDay,slideDir);}
+function jumpTo(idx){slideDir=idx>curDay?'right':'left';curDay=idx;showDay(curDay,slideDir);}
+
+// ── TTS ──
+function speakDay(idx){
+  if(!window.speechSynthesis){alert('이 브라우저는 음성을 지원하지 않아요 😢');return;}
+  window.speechSynthesis.cancel();
+  const d=days[idx];
+  const u=new SpeechSynthesisUtterance(d.japanese.replace(/[！！]/g,''));
+  u.lang='ja-JP';u.rate=0.82;u.pitch=1.05;
+  const jv=window.speechSynthesis.getVoices().find(v=>v.lang==='ja-JP')||window.speechSynthesis.getVoices().find(v=>v.lang.startsWith('ja'));
+  if(jv)u.voice=jv;
+  const btn=document.getElementById('spkBtn'+idx),sw=document.getElementById('sw'+idx),lbl=document.getElementById('spkLbl'+idx);
+  u.onstart=()=>{btn.classList.add('speaking');sw.style.display='flex';lbl.textContent='🎵  재생 중...';};
+  u.onend=()=>{btn.classList.remove('speaking');sw.style.display='none';lbl.innerHTML='🔊 &nbsp;소리로 들어보기';};
+  window.speechSynthesis.speak(u);
+}
+if(window.speechSynthesis){window.speechSynthesis.getVoices();window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();}
+
+// ── MARK DONE ──
+function markDone(idx){
+  if(st.completedDays.includes(idx))return;
+  const prevLv=getLv(st.xp), td=today(), isNew=st.lastDate!==td;
+  st.completedDays.push(idx);
+  let xp=XP_BASE;
+  if(isNew){
+    if(st.lastDate){const diff=Math.round((new Date(td)-new Date(st.lastDate))/86400000);st.streak=diff===1?st.streak+1:1;}
+    else{st.streak=1;}
+    if(st.streak>1)xp+=XP_STREAK;
+    st.lastDate=td;
+  }
+  st.xp = Math.min(MAX_XP, st.xp + xp); saveSt();
+  // Recalculate actual gained (after cap)
+  const actualXp = st.xp - (st.xp === MAX_XP ? Math.max(0, st.xp - xp) : st.xp - xp);
+  document.getElementById('doneBtn'+idx).classList.add('completed');
+  document.getElementById('doneBtn'+idx).textContent='✅ 오늘 완료했어요!';
+  updateProg(); buildRm(); updateGameUI(); launchConfetti();
+  const toastMsg = st.xp >= MAX_XP ? '🏆 MAX XP 달성!' : '+'+xp+' XP!'+(st.streak>1?' 🔥 '+st.streak+'일 연속!':'');
+  showXpToast(toastMsg);
+  const newLv=getLv(st.xp);
+  if(newLv.lv>prevLv.lv)setTimeout(()=>showLvUp(newLv),1200);
+  renderDl(); schedNotif();
+  if(st.completedDays.length===30)setTimeout(()=>document.getElementById('compOverlay').classList.add('show'),1800);
+}
+function closeComp(){document.getElementById('compOverlay').classList.remove('show');}
+
+// ── CONFETTI ──
+function launchConfetti(){
+  const c=document.getElementById('confetti'),cols=['#FFE566','#A8F0E0','#FFB3B3','#C5A8FF','#FFD6A5','#4DD9BB'];
+  for(let i=0;i<36;i++){const p=document.createElement('div');p.className='confetti-piece';p.style.left=Math.random()*100+'vw';p.style.top='-20px';p.style.background=cols[Math.floor(Math.random()*cols.length)];p.style.width=(6+Math.random()*8)+'px';p.style.height=(6+Math.random()*8)+'px';p.style.animationDuration=(1.2+Math.random()*1.2)+'s';p.style.animationDelay=(Math.random()*.6)+'s';p.style.borderRadius=Math.random()>.5?'50%':'2px';c.appendChild(p);setTimeout(()=>p.remove(),2800);}
+}
+
+// ── NOTIFICATIONS ──
+function reqNotif(){
+  if(!('Notification'in window)){alert('이 브라우저는 알림을 지원하지 않아요.');return;}
+  Notification.requestPermission().then(p=>{
+    if(p==='granted'){dismissNotif();new Notification('혼지쯔노 니홍고 🇯🇵',{body:'알림이 설정됐어요! 매일 오전 9시에 학습 알림을 보내드릴게요.'});schedNotif();}
+    else{dismissNotif();}
+  });
+}
+function dismissNotif(){document.getElementById('notifBanner').classList.add('hidden');st.notifOff=true;saveSt();}
+function schedNotif(){
+  if(typeof Notification==='undefined'||Notification.permission!=='granted')return;
+  const now=new Date(),n9=new Date();n9.setHours(9,0,0,0);if(now>=n9)n9.setDate(n9.getDate()+1);
+  clearTimeout(window._nt);
+  window._nt=setTimeout(()=>{
+    const nxt=st.completedDays.length<30?st.completedDays.length+1:1;
+    const dlMsg=st.deadline?'마감까지 '+Math.ceil((new Date(st.deadline)-new Date(today()))/86400000)+'일 남았어요! ':'';
+    new Notification('혼지쯔노 니홍고 🇯🇵',{body:'DAY '+nxt+' 표현이 기다려요! '+dlMsg+'🔥 '+st.streak+'일 연속 학습 중'});
+  },n9-now);
+}
+
+// ── PWA — Service Worker 등록 (sw.js 외부 파일) ──
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js', {scope: './'})
+    .then(r => console.log('[SW] 등록 완료:', r.scope))
+    .catch(e => console.warn('[SW] 등록 실패:', e.message));
+}
+
+init();
+</script>
+</body>
+</html>
